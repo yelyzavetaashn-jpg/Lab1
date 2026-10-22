@@ -2,7 +2,7 @@
 erDiagram
     USER ||--|| LIBRARY : owns
     LIBRARY }o--o{ GAME : contains
-    GAME }o--o{ GENRE : classified_as
+    GAME }o--|{ GENRE : classified_as
 
     USER {
         string user_id PK
