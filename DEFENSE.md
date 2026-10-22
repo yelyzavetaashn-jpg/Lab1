@@ -25,11 +25,11 @@ The relationship is one-to-one. Each user owns exactly one personal library, and
 
  Library–Game
 
-The relationship is many-to-many. A library can contain multiple games, and the same game can appear in multiple libraries.
+The relationship is many-to-many. A library can contain zero or more games, and the same game can appear in zero or more libraries.
 
  Game–Genre
 
-The relationship is many-to-many. A game can belong to multiple genres, and each genre can be associated with multiple games.
+The relationship is many-to-many. Each game must belong to one or more genres, while each genre can be associated with zero or more games.
 
 The model represents these many-to-many relationships directly because the relationships do not have additional attributes of their own.
 
@@ -41,10 +41,31 @@ User information is stored in the User entity, game information in Game, and gen
 
 Primary keys provide unique identification, while the foreign key connects Library to User.
 
-This is a conceptual model. Full normalization and enforcement of constraints, such as uniqueness of `Library.user_id` for the one-to-one relationship, would need to be verified when implementing the physical database schema.
+This is a conceptual model. When implementing the physical database schema, additional constraints would be required to enforce the intended rules. For example, `Library.user_id` must be unique to enforce the one-to-one relationship between User and Library.
 
  5. Verification
 
 The ER model is checked against the requirements in `spec.md`.
 
-- All four required entities are present
+- All four required entities are present: User, Library, Game, and Genre.
+- Each entity has a primary key.
+- The `Library.user_id` foreign key references `User.user_id`.
+- The User–Library relationship is one-to-one.
+- The Library–Game relationship is many-to-many.
+- The Game–Genre relationship reflects the requirement that each game belongs to at least one genre, while a genre may classify multiple games or no games.
+- Entity and attribute names are consistent between the specification and the ER diagram.
+- The rendered PNG diagram is included in the `render` directory.
+- The validation script checks the presence of the specification, diagram, entities, keys, relationships, and rendered image.
+
+The model is intended to satisfy the business rules and acceptance criteria defined in `spec.md`.
+
+ 6. Assumptions and Limitations
+
+- Each user has exactly one personal library.
+- A library can be empty.
+- A game can appear in multiple libraries.
+- Each game must have at least one genre.
+- A genre can exist without being assigned to any game.
+- The model describes the conceptual database structure and does not include SQL table creation statements or physical database implementation.
+- Many-to-many relationships are shown directly in the conceptual model. Their implementation in a relational database would require appropriate junction tables.
+
