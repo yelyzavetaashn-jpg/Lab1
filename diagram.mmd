@@ -1,0 +1,28 @@
+
+erDiagram
+    USER ||--|| LIBRARY : owns
+    LIBRARY }o--o{ GAME : contains
+    GAME }o--o{ GENRE : classified_as
+
+    USER {
+        string user_id PK
+        string username
+        string email
+    }
+
+    LIBRARY {
+        string library_id PK
+        string user_id FK
+        string name
+    }
+
+    GAME {
+        string game_id PK
+        string title
+        int release_year
+    }
+
+    GENRE {
+        string genre_id PK
+        string name
+    }
