@@ -1,0 +1,17 @@
+
+{
+  "name": "lab1",
+  "version": "1.0.0",
+  "description": "Conceptual ER modeling for a video game library",
+  "main": "index.js",
+  "scripts": {
+    "validate": "node scripts/validate.js"
+  },
+  "keywords": [
+    "ER-model",
+    "Mermaid",
+    "video-game-library"
+  ],
+  "author": "",
+  "license": "ISC"
+}
