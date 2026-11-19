@@ -7,18 +7,18 @@ erDiagram
     USER {
         string user_id PK
         string username
-        string email
+        string email UK
     }
 
     LIBRARY {
         string library_id PK
-        string user_id FK
+        string user_id FK, UK
         string name
     }
 
     GAME {
         string game_id PK
-        string title
+        string title UK
         int release_year
     }
 
