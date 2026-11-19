@@ -47,17 +47,19 @@ Attributes:
 - `genre_id` — unique identifier of the genre (primary key).
 - `name` — genre name.
 
+ 
  4. Business Rules and Relationships
 
 1. Every user owns exactly one personal library.
 2. Every library belongs to exactly one user.
 3. A library may contain zero or more games.
 4. A game may appear in zero or more libraries.
-5. A game may belong to one or more genres.
+5. A game must belong to at least one genre.
 6. A genre may classify zero or more games.
-7. Each entity has a unique primary key.
-8. The `Library.user_id` foreign key references `User.user_id`.
-9. The model represents many-to-many relationships directly, without introducing associative entities that have no independent attributes.
+7. Every entity has a unique primary key.
+8. `Library.user_id` references `User.user_id` and must be unique.
+9. Every game must have a unique title.
+10. Many-to-many relationships are represented directly because they have no independent attributes.
 
  5. Acceptance Criteria
 
