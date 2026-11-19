@@ -61,18 +61,18 @@ Attributes:
 9. Every game must have a unique title.
 10. Many-to-many relationships are represented directly because they have no independent attributes.
 
+ 
  5. Acceptance Criteria
 
-- The ER model contains the four entities: User, Library, Game, and Genre.
-- Every entity has a primary key.
-- The Library entity includes a foreign key referencing User.
-- The User–Library relationship is one-to-one.
-- The Library–Game relationship is many-to-many.
-- The Game–Genre relationship is many-to-many.
-- Entity and attribute names are consistent between this specification and the ER model.
-- The diagram is written declaratively in Mermaid.
-- The model does not contain unnecessary associative entities.
-- The rendered ER diagram is included in the project.
+- Each user owns exactly one library, and each library has exactly one owner.
+- No two users can have the same email address.
+- No two games can have the same title.
+- Every game belongs to at least one genre.
+- A game can belong to multiple genres, and a genre can classify multiple games.
+- A library can contain multiple games, and a game can appear in multiple libraries.
+- Every library references an existing user.
+- The ER diagram correctly represents all business rules and relationship cardinalities.
+
 
  6. Assumptions and Limitations
 
