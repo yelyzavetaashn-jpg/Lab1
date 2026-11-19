@@ -1,71 +1,59 @@
- Model Defense: Video Game Library
+# Model Defense: Video Game Library
 
- 1. Domain Overview
+## 1. Intent and Design Criteria
 
-The selected domain is a video game library system. The system stores information about users, their personal libraries, video games, and game genres.
+The purpose of the model is to represent a video game library where registered users can maintain personal collections of games.
 
-The purpose of the model is to represent the main entities, their attributes, and the relationships between them using a conceptual entity-relationship (ER) diagram.
+The model must:
+- Represent users, personal libraries, games, and genres.
+- Enforce one personal library per user.
+- Allow games to appear in multiple libraries.
+- Allow games to have multiple genres while requiring each game to have at least one genre.
+- Ensure that user emails and game titles are unique.
 
- 2. Entity Design
+## 2. Key Design Decisions
 
-The model contains four entities:
+### User–Library (1:1)
 
-- User — represents a registered user and stores the user's identifier, username, and email.
-- Library — represents a personal library owned by a user and stores its identifier, owner's identifier, and name.
-- Game — represents a video game and stores its identifier, title, and release year.
-- Genre — represents a category used to classify video games.
+Each user owns exactly one library, and each library belongs to exactly one user. Library is kept as a separate entity to distinguish user information from collection information and allow future extension.
 
-Each entity has a primary key (PK) that uniquely identifies each record. The `Library.user_id` attribute is a foreign key (FK) referencing `User.user_id`.
+### Library–Game (M:N)
 
- 3. Relationship Design
+A library can contain multiple games, and the same game can appear in multiple libraries. The relationship is represented directly because it has no independent attributes.
 
- User–Library
+### Game–Genre (M:N)
 
-The relationship is one-to-one. Each user owns exactly one personal library, and each library belongs to exactly one user. This design follows the business rules defined in `spec.md`.
+A game can have multiple genres, and a genre can classify multiple games. Each game must belong to at least one genre.
 
- Library–Game
+## 3. Alternatives Considered
 
-The relationship is many-to-many. A library can contain zero or more games, and the same game can appear in zero or more libraries.
+- **Library merged into User:** This would simplify the model but combine two separate concepts.
+- **Associative entity for Library–Game:** This would be useful if the relationship stored additional data, such as the date a game was added or its completion status. Since these attributes are outside the current scope, a direct M:N relationship is sufficient.
+- **Associative entity for Game–Genre:** This is unnecessary for the current conceptual model because the relationship has no independent attributes.
 
- Game–Genre
+## 4. Top-3 Discrepancy Audit
 
-The relationship is many-to-many. Each game must belong to one or more genres, while each genre can be associated with zero or more games.
+| Initial version / issue | Correction | What should have been clarified in the specification |
+|---|---|---|
+| The initial specification stated that a game may belong to one or more genres, but the initial diagram allowed zero genres (`0..N`). | Commit `9e813f9` clarified the rule in `spec.md`. Commit `cc51070` updated the Game–Genre cardinality in `diagram.mmd` to require at least one genre. | Every game must belong to at least one genre. The minimum cardinality must be explicitly stated and consistent in the specification and diagram. |
+| The initial diagram represented `Library.user_id` as a foreign key but did not explicitly mark it as unique. | Commit `989727f` added the `UK` constraint to `Library.user_id`. | Each user must own exactly one library, and the library owner reference must be unique. |
+| The initial diagram did not mark User email and Game title as unique. | Commit `88cafb2` clarified these uniqueness requirements in `spec.md`, and commit `989727f` added the corresponding `UK` markers in `diagram.mmd`. | Every user's email address and every game's title must be unique. |
 
-The model represents these many-to-many relationships directly because the relationships do not have additional attributes of their own.
 
- 4. Normalization
 
-The model separates users, libraries, games, and genres into distinct entities to reduce unnecessary data duplication.
+## 5. Verification
 
-User information is stored in the User entity, game information in Game, and genre information in Genre. The Library entity stores information about a user's collection and references the owner through a foreign key.
+The model was verified using `npm run validate`.
 
-Primary keys provide unique identification, while the foreign key connects Library to User.
+The validation script checks:
+- All four required entities are defined.
+- Every entity has its declared primary key.
+- User–Library is one-to-one.
+- Library–Game is many-to-many.
+- Every game belongs to at least one genre.
+- `Library.user_id` is both a foreign key and unique.
+- User email and Game title are unique.
 
-This is a conceptual model. When implementing the physical database schema, additional constraints would be required to enforce the intended rules. For example, `Library.user_id` must be unique to enforce the one-to-one relationship between User and Library.
+The validation completed successfully with all checks passing.
 
- 5. Verification
-
-The ER model is checked against the requirements in `spec.md`.
-
-- All four required entities are present: User, Library, Game, and Genre.
-- Each entity has a primary key.
-- The `Library.user_id` foreign key references `User.user_id`.
-- The User–Library relationship is one-to-one.
-- The Library–Game relationship is many-to-many.
-- The Game–Genre relationship reflects the requirement that each game belongs to at least one genre, while a genre may classify multiple games or no games.
-- Entity and attribute names are consistent between the specification and the ER diagram.
-- The rendered PNG diagram is included in the `render` directory.
-- The validation script checks the presence of the specification, diagram, entities, keys, relationships, and rendered image.
-
-The model is intended to satisfy the business rules and acceptance criteria defined in `spec.md`.
-
- 6. Assumptions and Limitations
-
-- Each user has exactly one personal library.
-- A library can be empty.
-- A game can appear in multiple libraries.
-- Each game must have at least one genre.
-- A genre can exist without being assigned to any game.
-- The model describes the conceptual database structure and does not include SQL table creation statements or physical database implementation.
-- Many-to-many relationships are shown directly in the conceptual model. Their implementation in a relational database would require appropriate junction tables.
-
+The Mermaid diagram and specification were also reviewed to ensure that their relationships and business rules are consistent.

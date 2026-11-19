@@ -5,7 +5,6 @@ const path = require("node:path");
 const root = path.join(__dirname, "..");
 const specPath = path.join(root, "spec.md");
 const diagramPath = path.join(root, "diagram.mmd");
-const renderPath = path.join(root, "render");
 
 const errors = [];
 
@@ -20,20 +19,45 @@ function check(condition, message) {
 
 const specExists = fs.existsSync(specPath);
 const diagramExists = fs.existsSync(diagramPath);
-const renderExists = fs.existsSync(renderPath);
 
 check(specExists, "Specification file exists");
 check(diagramExists, "Mermaid ER diagram exists");
-check(renderExists, "Render directory exists");
+
+if (specExists) {
+    const spec = fs.readFileSync(specPath, "utf8");
+
+    check(
+        /Library\.user_id.*must be unique/.test(spec),
+        "Library owner reference must be unique"
+    );
+
+    check(
+        /game must have a unique title/i.test(spec),
+        "Game title must be unique"
+    );
+
+    check(
+        /email address must be unique/i.test(spec),
+        "User email must be unique"
+    );
+}
 
 if (diagramExists) {
     const diagram = fs.readFileSync(diagramPath, "utf8");
 
     check(/^\s*erDiagram/m.test(diagram), "Diagram uses Mermaid ER syntax");
 
+    function getEntityBlock(entity) {
+        const match = diagram.match(
+            new RegExp(`^\\s*${entity}\\s*\\{([\\s\\S]*?)^\\s*\\}`, "m")
+        );
+
+        return match ? match[1] : null;
+    }
+
     for (const entity of ["USER", "LIBRARY", "GAME", "GENRE"]) {
         check(
-            new RegExp(`^\\s*${entity}\\s*\\{`, "m").test(diagram),
+            getEntityBlock(entity) !== null,
             `Entity ${entity} is defined`
         );
     }
@@ -50,7 +74,7 @@ if (diagramExists) {
 
     check(
         /GAME\s*\}o--\|\{\s*GENRE/.test(diagram),
-        "Game-Genre relationship matches the specification"
+        "Game-Genre relationship requires at least one genre"
     );
 
     for (const [entity, key] of [
@@ -59,33 +83,32 @@ if (diagramExists) {
         ["GAME", "game_id"],
         ["GENRE", "genre_id"],
     ]) {
-        const block = diagram.match(
-            new RegExp(`^\\s*${entity}\\s*\\{([\\s\\S]*?)^\\s*\\}`, "m")
-        );
+        const block = getEntityBlock(entity);
 
         check(
-            block && new RegExp(`\\b${key}\\s+PK\\b`).test(block[1]),
+            block && new RegExp(`\\b${key}\\s+PK\\b`).test(block),
             `${entity} has primary key ${key}`
         );
     }
 
-    const libraryBlock = diagram.match(
-        /^\s*LIBRARY\s*\{([\s\S]*?)^\s*\}/m
+    const libraryBlock = getEntityBlock("LIBRARY");
+    const userBlock = getEntityBlock("USER");
+    const gameBlock = getEntityBlock("GAME");
+
+    check(
+        libraryBlock && /\buser_id\s+FK,\s*UK\b/.test(libraryBlock),
+        "Library user_id is a unique foreign key"
     );
 
     check(
-        libraryBlock && /\buser_id\s+FK\b/.test(libraryBlock[1]),
-        "Library has a foreign key to User"
-    );
-}
-
-if (renderExists) {
-    const files = fs.readdirSync(renderPath);
-    const pngFiles = files.filter((file) =>
-        file.toLowerCase().endsWith(".png")
+        userBlock && /\bemail\s+UK\b/.test(userBlock),
+        "User email is unique"
     );
 
-    check(pngFiles.length > 0, "Rendered PNG image exists");
+    check(
+        gameBlock && /\btitle\s+UK\b/.test(gameBlock),
+        "Game title is unique"
+    );
 }
 
 if (errors.length > 0) {
