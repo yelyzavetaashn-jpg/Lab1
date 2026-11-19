@@ -1,54 +1,52 @@
 
- System Specification: Video Game Library
+# System Specification: Video Game Library
 
- 1. Purpose
+## 1. Purpose
 
 The system allows registered users to maintain personal video game libraries. It stores information about users, libraries, games, and genres.
 
- 2. Scope
+## 2. Scope
 
 The model describes the conceptual data structure of a video game library. It does not include game descriptions, developers, prices, or user passwords.
 
+## 3. Data Requirements
 
- 3. Data Requirements
-
- User
+### User
 
 Represents a registered user.
 
-Attributes:
+**Attributes:**
 - `user_id` — unique identifier of the user (primary key).
 - `username` — user's display name.
 - `email` — user's email address.
 
- Library
+### Library
 
 Represents a personal library owned by one user.
 
-Attributes:
+**Attributes:**
 - `library_id` — unique identifier of the library (primary key).
 - `user_id` — identifier of the library owner (foreign key referencing User).
 - `name` — name of the library.
 
- Game
+### Game
 
 Represents a video game.
 
-Attributes:
+**Attributes:**
 - `game_id` — unique identifier of the game (primary key).
 - `title` — title of the game.
 - `release_year` — year the game was released.
 
- Genre
+### Genre
 
 Represents a genre used to classify games.
 
-Attributes:
+**Attributes:**
 - `genre_id` — unique identifier of the genre (primary key).
 - `name` — genre name.
 
- 
- 4. Business Rules and Relationships
+## 4. Business Rules and Relationships
 
 1. Every user owns exactly one personal library.
 2. Every library belongs to exactly one user.
@@ -56,13 +54,12 @@ Attributes:
 4. A game may appear in zero or more libraries.
 5. A game must belong to at least one genre.
 6. A genre may classify zero or more games.
-7. Every entity has a unique primary key.
-8. `Library.user_id` references `User.user_id` and must be unique.
-9. Every game must have a unique title.
+7. `Library.user_id` references `User.user_id` and must be unique.
+8. Every game must have a unique title.
+9. Every user's email address must be unique.
 10. Many-to-many relationships are represented directly because they have no independent attributes.
 
- 
- 5. Acceptance Criteria
+## 5. Acceptance Criteria
 
 - Each user owns exactly one library, and each library has exactly one owner.
 - No two users can have the same email address.
@@ -73,11 +70,12 @@ Attributes:
 - Every library references an existing user.
 - The ER diagram correctly represents all business rules and relationship cardinalities.
 
-
- 6. Assumptions and Limitations
+## 6. Assumptions and Limitations
 
 - Each user has exactly one personal library.
 - The same game may appear in different users' libraries.
 - Games may have multiple genres.
-- The model describes conceptual data structure rather than a complete implemented database.
-- Attributes such as game descriptions, developers, prices, and user passwords are outside the current scope.
+- Each game must belong to at least one genre.
+- The model describes a conceptual data structure rather than a complete implemented database.
+- Game descriptions, developers, prices, and user passwords are outside the current scope.
+
