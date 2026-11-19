@@ -1,14 +1,14 @@
-System Specification: Video Game Library
 
-1. Purpose
+ System Specification: Video Game Library
 
-The system describes a video game library where users can maintain personal collections of games. It stores information about users, libraries, games, and genres.
+ 1. Purpose
 
-2. Stakeholders
+The system allows registered users to maintain personal video game libraries. It stores information about users, libraries, games, and genres.
 
-- Users need to maintain their personal game libraries.
-- System administrators need structured information about users and games.
-- Game catalog managers need to classify games by genre.
+ 2. Scope
+
+The model describes the conceptual data structure of a video game library. It does not include game descriptions, developers, prices, or user passwords.
+
 
  3. Data Requirements
 
